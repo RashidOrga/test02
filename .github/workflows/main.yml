@@ -26,65 +26,40 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # Étape 1
-    - name: Checkout template repository
-      uses: actions/checkout@v4
-      with:
-        repository: RashidOrga/pyth_template
-        ref: master
-        token: ${{ secrets.GITHUB_TOKEN }} # `GH_PAT` is a secret that contains your PAT
-        path: template  # Clonage dans un sous-dossier "template"
-
-    - name: LSL
-      run: |
-        ls ${{ github.workspace }}/template
-    
-    
-
-    # # Étape 0
-    # - name: Configure Git authentication
-    #   run: |
-    #     git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-    #     git config --global user.name "github-actions[bot]"
-    #     git config --global user.email "github-actions[bot]@users.noreply.github.com"   
-    
-    # Étape 2 : Checkout du dépôt principal
-    - name: Checkout main repository  # Revenir au dépôt principal
-      uses: actions/checkout@v4
-
-    # Étape 2 
-    - name: Install Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.11'
-
-    - name: Install Cookiecutter
-      run: |
-        python -m pip install --upgrade pip
-        pip install cookiecutter
-    
-    # Étape 3 : Exécuter Cookiecutter en utilisant le template cloné
-    - name: Run Cookiecutter to generate project structure
-      run: |
-        template_path=$(realpath template)
-        echo $template_path
-        cookiecutter --no-input --verbose $template_path \
-          project_name="${{ github.event.inputs.project_name }}" \
-          repo_owner_full_name="${{ github.event.inputs.repo_owner_full_name }}" \
-          repo_owner_email="${{ github.event.inputs.repo_owner_email }}" \
-          description="${{ github.event.inputs.description }}"
-          
-    - name: LSL
-      run: |
-        ls ${{ github.workspace }}
-
-    - name: Commit and push changes
-      run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "action@github.com"
-
-        git add .
-        git commit -m "Generated project from template" || echo "Nothing to commit"
-        git push
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      # Étape 1 : Cloner le dépôt de template dans le sous-dossier "template"
+      - name: Checkout template repository
+        uses: actions/checkout@v4
+        with:
+          repository: RashidOrga/pyth_template
+          ref: master
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: template  # Cloner le template dans un sous-dossier "template"
+      
+      # Étape 2 : Cloner le dépôt principal dans un sous-dossier "main-repo"
+      - name: Checkout main repository  # Cloner le dépôt principal dans "main-repo"
+        uses: actions/checkout@v4
+        with:
+          path: main-repo  # Clonage du dépôt principal dans "main-repo"
+  
+      # Étape 3 : Installer Cookiecutter
+      - name: Install Cookiecutter
+        run: pip install cookiecutter
+  
+      # Étape 4 : Exécuter Cookiecutter pour générer la structure du projet dans le dépôt principal
+      - name: Run Cookiecutter to generate project structure
+        run: |
+          template_path=$(realpath template)
+          cd main-repo
+          cookiecutter --no-input --verbose $template_path
+  
+      # Étape 5 : Commit et Push des changements (dans le dépôt principal)
+      - name: Commit and Push generated project
+        run: |
+          cd main-repo
+          git config --global user.name "github-actions"
+          git config --global user.email "action@github.com"
+          git add .
+          git commit -m "Generate project using cookiecutter template"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
