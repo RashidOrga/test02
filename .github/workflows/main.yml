@@ -66,7 +66,9 @@ jobs:
     # Étape 3 : Exécuter Cookiecutter en utilisant le template cloné
     - name: Run Cookiecutter to generate project structure
       run: |
-        cookiecutter ./template \
+        template_path=$(realpath template)
+        echo $template_path
+        cookiecutter --no-input --verbose $template_path \
           project_name="${{ github.event.inputs.project_name }}" \
           repo_owner_full_name="${{ github.event.inputs.repo_owner_full_name }}" \
           repo_owner_email="${{ github.event.inputs.repo_owner_email }}" \
