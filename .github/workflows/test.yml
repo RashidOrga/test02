@@ -1,0 +1,28 @@
+name: Add test.txt and Push
+
+on:
+  workflow_dispatch:
+
+jobs:
+  add-file-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Create a new file
+      run: echo "Ceci est un fichier de test." > test.txt
+
+    - name: Commit the new file
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "action@github.com"
+        git add test.txt
+        git commit -m "Add test.txt file"
+    
+    - name: Push changes
+      run: git push
+      env:
+        # Utilise GITHUB_TOKEN pour l'authentification
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
