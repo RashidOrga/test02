@@ -17,9 +17,9 @@ on:
         required: true
 
 permissions:
-  contents: write
-  issues: write
-  pull-requests: write
+  contents: write  # Donner l'accès en écriture pour cloner/pusher sur le dépôt privé
+  issues: write    # Si vous devez gérer les issues dans un dépôt privé
+  pull-requests: write  # Si vous devez gérer des pull requests
 
 jobs:
   generate_project:
@@ -31,10 +31,10 @@ jobs:
       with:
         repository: RashidOrga/pyth_template
         ref: master
-        token: ${{ secrets.GITHUB_TOKEN }}
-        path: template
+        token: ${{ secrets.GITHUB_TOKEN }} # `GH_PAT` is a secret that contains your PAT
+        path: template  # Clonage dans un sous-dossier "template"
 
-    - name: Display workspace content
+    - name: LSL
       run: |
         ls ${{ github.workspace }}
 
@@ -50,10 +50,13 @@ jobs:
 
     - name: Configure Git authentication
       run: |
+        git init
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+    
 
+      
     - name: Run Cookiecutter to generate project structure
       run: |
         cookiecutter --no-input --verbose ./template \
@@ -61,13 +64,15 @@ jobs:
           repo_owner_full_name="${{ github.event.inputs.repo_owner_full_name }}" \
           repo_owner_email="${{ github.event.inputs.repo_owner_email }}" \
           description="${{ github.event.inputs.description }}"
-
-    - name: Display generated files
+          
+    - name: LSL
       run: |
-        ls ${{ github.workspace }}  # Affiche le contenu du répertoire de travail après génération
+        ls ${{ github.workspace }}
 
     - name: Commit and push changes
       run: |
+        git config --local user.name "github-actions[bot]"
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git add .
         git commit -m "Generated project from template" || echo "Nothing to commit"
         git push
