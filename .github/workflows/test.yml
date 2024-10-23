@@ -3,6 +3,9 @@ name: Add test.txt and Push
 on:
   workflow_dispatch:
 
+permissions:
+    contents: write  # Assurer que le GITHUB_TOKEN a bien accès en écriture
+
 jobs:
   add-file-and-push:
     runs-on: ubuntu-latest
