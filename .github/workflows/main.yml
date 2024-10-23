@@ -31,12 +31,12 @@ jobs:
       with:
         repository: RashidOrga/pyth_template
         ref: master
-        token: ${{ secrets.Org_PAT  }} # `GH_PAT` is a secret that contains your PAT
+        token: ${{ secrets.ORG_PAT }} # `GH_PAT` is a secret that contains your PAT
 
     - name: Install Python
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x'
+        python-version: '3.11'
 
     - name: Install Cookiecutter
       run: |
