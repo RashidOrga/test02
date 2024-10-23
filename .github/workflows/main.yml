@@ -17,9 +17,9 @@ on:
         required: true
 
 permissions:
-  contents: write  # Donner l'accès en écriture pour cloner/pusher sur le dépôt privé
-  issues: write    # Si vous devez gérer les issues dans un dépôt privé
-  pull-requests: write  # Si vous devez gérer des pull requests
+  contents: write
+  issues: write
+  pull-requests: write
 
 jobs:
   generate_project:
@@ -31,9 +31,10 @@ jobs:
       with:
         repository: RashidOrga/pyth_template
         ref: master
-        token: ${{ secrets.GITHUB_TOKEN }} # `GH_PAT` is a secret that contains your PAT
-    
-    - name: LSL
+        token: ${{ secrets.GITHUB_TOKEN }}
+        path: template
+
+    - name: Display workspace content
       run: |
         ls ${{ github.workspace }}
 
@@ -52,24 +53,21 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-    
 
-      
     - name: Run Cookiecutter to generate project structure
       run: |
-        cookiecutter --no-input --verbose ./ \
+        cookiecutter --no-input --verbose ./template \
           project_name="${{ github.event.inputs.project_name }}" \
           repo_owner_full_name="${{ github.event.inputs.repo_owner_full_name }}" \
           repo_owner_email="${{ github.event.inputs.repo_owner_email }}" \
           description="${{ github.event.inputs.description }}"
-    - name: LSL
+
+    - name: Display generated files
       run: |
-        ls ${{ github.workspace }}
+        ls ${{ github.workspace }}  # Affiche le contenu du répertoire de travail après génération
 
     - name: Commit and push changes
       run: |
-        git config --local user.name "github-actions[bot]"
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
         git add .
         git commit -m "Generated project from template" || echo "Nothing to commit"
         git push
