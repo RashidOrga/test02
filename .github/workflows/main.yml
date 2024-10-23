@@ -1,0 +1,67 @@
+name: Run Cookiecutter to generate project structure
+
+on:
+  workflow_dispatch:
+    inputs:
+      project_name:
+        description: 'Enter the project name'
+        required: true
+      repo_owner_full_name:
+        description: 'Enter the owner full name'
+        required: true
+      repo_owner_email:
+        description: 'Enter the owner email'
+        required: true
+      description:
+        description: 'Enter the project description'
+        required: true
+
+permissions:
+  contents: write  # Donner l'accès en écriture pour cloner/pusher sur le dépôt privé
+  issues: write    # Si vous devez gérer les issues dans un dépôt privé
+  pull-requests: write  # Si vous devez gérer des pull requests
+
+jobs:
+  generate_project:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout template repository
+      uses: actions/checkout@v4
+      with:
+        repository: RashidOrga/pyth_template
+        ref: master
+        token: ${{ secrets.Org_PAT  }} # `GH_PAT` is a secret that contains your PAT
+
+    - name: Install Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install Cookiecutter
+      run: |
+        python -m pip install --upgrade pip
+        pip install cookiecutter
+
+    - name: Configure Git authentication
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+
+      
+    - name: Run Cookiecutter to generate project structure
+      run: |
+        cookiecutter --no-input --verbose ./pyth_template \
+          project_name="${{ github.event.inputs.project_name }}" \
+          repo_owner_full_name="${{ github.event.inputs.repo_owner_full_name }}" \
+          repo_owner_email="${{ github.event.inputs.repo_owner_email }}" \
+          description="${{ github.event.inputs.description }}"
+    
+    - name: Commit and push changes
+      run: |
+        git config --local user.name "github-actions[bot]"
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git add -A
+        git commit -m "Generated project from template" || echo "Nothing to commit"
+        git push

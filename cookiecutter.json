@@ -1,0 +1,13 @@
+{
+    "project_name": "Cookiecutter Template",
+    "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '_').replace('-', '_') }}",
+    "pkg_name": "{{ cookiecutter.project_slug }}",
+    "repo_owner_full_name": "Last_name First_Name ",
+    "repo_owner_email": "{{ cookiecutter.repo_owner_full_name.lower().replace(' ','.') }}@gmail.com",
+    "description": "Skeleton project created by Cookiecutter PyPackage",
+    "version": "0.1.0",
+    "license": "MIT",
+    "github_user_organization_name": "user_or_organization",
+    "github_repo_name": "{{ cookiecutter.project_slug }}",
+    "github_repo_link": "https://github.com/{{ cookiecutter.github_user_organization_name }}/{{ cookiecutter.github_repo_name }}"
+}
