@@ -44,14 +44,22 @@ jobs:
       # Étape 3 : Installer Cookiecutter
       - name: Install Cookiecutter
         run: pip install cookiecutter
-  
+      
+      - name: list
+        run: |
+          ls ${{ github.workspace }}
+
       # Étape 4 : Exécuter Cookiecutter pour générer la structure du projet dans le dépôt principal
       - name: Run Cookiecutter to generate project structure
         run: |
           template_path=$(realpath template)
           cd main-repo
-          cookiecutter --no-input --verbose $template_path
-  
+          cookiecutter --no-input --verbose ../template \
+            project_name="${{ github.event.inputs.project_name }}" \
+            repo_owner_full_name="${{ github.event.inputs.repo_owner_full_name }}" \
+            repo_owner_email="${{ github.event.inputs.repo_owner_email }}" \
+            description="${{ github.event.inputs.description }}"
+            
       # Étape 5 : Commit et Push des changements (dans le dépôt principal)
       - name: Commit and Push generated project
         run: |
