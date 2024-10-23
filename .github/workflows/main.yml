@@ -31,7 +31,7 @@ jobs:
       with:
         repository: RashidOrga/pyth_template
         ref: master
-        token: ${{ secrets.ORG_PAT }} # `GH_PAT` is a secret that contains your PAT
+        token: ${{ secrets.GITHUB_TOKEN }} # `GH_PAT` is a secret that contains your PAT
 
     - name: Install Python
       uses: actions/setup-python@v2
