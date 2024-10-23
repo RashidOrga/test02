@@ -52,6 +52,7 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+    
 
       
     - name: Run Cookiecutter to generate project structure
@@ -61,11 +62,14 @@ jobs:
           repo_owner_full_name="${{ github.event.inputs.repo_owner_full_name }}" \
           repo_owner_email="${{ github.event.inputs.repo_owner_email }}" \
           description="${{ github.event.inputs.description }}"
-    
+    - name: LSL
+      run: |
+        ls ${{ github.workspace }}
+
     - name: Commit and push changes
       run: |
         git config --local user.name "github-actions[bot]"
         git config --local user.email "github-actions[bot]@users.noreply.github.com"
-        git add -A
+        git add .
         git commit -m "Generated project from template" || echo "Nothing to commit"
         git push
