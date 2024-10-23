@@ -26,13 +26,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout template repository
-      uses: actions/checkout@v4
-      with:
-        repository: RashidOrga/pyth_template
-        ref: master
-        token: ${{ secrets.GITHUB_TOKEN }} # `GH_PAT` is a secret that contains your PAT
-        path: template  # Clonage dans un sous-dossier "template"
+    # - name: Checkout template repository
+    #   uses: actions/checkout@v4
+    #   with:
+    #     repository: RashidOrga/pyth_template
+    #     ref: master
+    #     token: ${{ secrets.GITHUB_TOKEN }} # `GH_PAT` is a secret that contains your PAT
+    #     path: template  # Clonage dans un sous-dossier "template"
 
     - name: LSL
       run: |
@@ -59,7 +59,7 @@ jobs:
       
     - name: Run Cookiecutter to generate project structure
       run: |
-        cookiecutter --no-input --verbose ./template \
+        cookiecutter --no-input --verbose https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} \
           project_name="${{ github.event.inputs.project_name }}" \
           repo_owner_full_name="${{ github.event.inputs.repo_owner_full_name }}" \
           repo_owner_email="${{ github.event.inputs.repo_owner_email }}" \
