@@ -37,7 +37,7 @@ jobs:
 
     - name: LSL
       run: |
-        ls ${{ github.workspace }}
+        ls ${{ github.workspace }}/template
     
     
 
